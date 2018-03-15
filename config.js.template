@@ -21,10 +21,10 @@ config.sessionSecret = 'keyboard cat';
 
 // OAuth2 configuration
 config.oauth2 = {
-    'server': 'https://account.lab.fiware.org',
+    'server': 'http://idm.docker:8000',
     'clientID': '--client-id--',
     'clientSecret': '--client-secret--',
-    'callbackURL': 'http://localhost/auth/fiware/callback',
+    'callbackURL': 'http://proxy.docker/auth/fiware/callback',
     'roles': {
         'admin': 'provider',
         'customer': 'customer',
