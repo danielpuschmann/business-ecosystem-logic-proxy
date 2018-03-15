@@ -4,7 +4,7 @@ RUN apt-get update && apt-get install -y git python-pip wget mongodb
 
 RUN pip install sh
 
-RUN git clone https://github.com/FIWARE-TMForum/business-ecosystem-logic-proxy
+RUN git clone https://github.com/caposseleDigicat/business-ecosystem-logic-proxy.git
 
 WORKDIR business-ecosystem-logic-proxy
 
@@ -14,7 +14,7 @@ RUN tar -xvf node-v6.9.1-linux-x64.tar.xz
 
 RUN echo 'export PATH=$PATH:/business-ecosystem-logic-proxy/node-v6.9.1-linux-x64/bin' >> ~/.bashrc
 
-RUN git checkout develop
+RUN git checkout angelo
 
 RUN mkdir indexes
 VOLUME /business-ecosystem-logic-proxy/indexes
