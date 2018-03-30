@@ -1,6 +1,6 @@
 /* Copyright (c) 2015 - 2017 CoNWeT Lab., Universidad Politécnica de Madrid
  *
- * This file belongs to the business-ecosystem-logic-proxy of the
+ * This file belongs to the bae-logic-proxy-test of the
  * Business API Ecosystem
  *
  * This program is free software: you can redistribute it and/or modify
@@ -40,9 +40,7 @@
             search: search,
             count: count,
             detail: detail,
-            renew: renew,
-            getToken: getToken,
-            setToken: setToken
+            renew: renew
         };
 
         function query(deferred, filters, method, callback) {
@@ -170,34 +168,6 @@
             });
 
             return deferred.promise;
-        }
-
-        function getToken(data) {
-            var tokenResource = $resource(URLS.TOKEN_GET);
-            var deferred = $q.defer();
-
-            tokenResource.save(data, function(res, getResponseHeaders) {
-                deferred.resolve(res, {headers: getResponseHeaders()});
-            }, function (response) {
-                deferred.reject(response);
-            });
-            
-            return deferred.promise;
-        
-        }
-        
-        function setToken(data) {
-            var tokenResource = $resource(URLS.TOKEN_SET);
-            var deferred = $q.defer();
-
-            tokenResource.save(data, function(res, getResponseHeaders) {
-                deferred.resolve(res, {headers: getResponseHeaders()});
-            }, function (response) {
-                deferred.reject(response);
-            });
-            
-            return deferred.promise;
-        
         }
     }
 })();

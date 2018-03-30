@@ -1,6 +1,6 @@
 /* Copyright (c) 2015 - 2017 CoNWeT Lab., Universidad Politécnica de Madrid
  *
- * This file belongs to the business-ecosystem-logic-proxy of the
+ * This file belongs to the bae-logic-proxy-test of the
  * Business API Ecosystem
  *
  * This program is free software: you can redistribute it and/or modify
@@ -37,13 +37,13 @@
     };
 
     angular
-        .module('app', ['ngResource', 'ngMessages', 'angularMoment', 'ui.router', 'internationalPhoneNumber', 'ngCookies'])
+        .module('app', ['ngResource', 'ngMessages', 'angularMoment', 'ui.router', 'internationalPhoneNumber'])
         .config(['ipnConfig', function(ipnConfig) {
             ipnConfig.separateDialCode = true;
             ipnConfig.utilsScript = '/resources/intl-tel-input-8.4.7/js/utils.js';
             ipnConfig.initialCountry = 'auto';
             ipnConfig.geoIpLookup = function(callback) {
-                $.get("https://ipinfo.io", function() {}, "jsonp").always(function(resp) {
+                $.get("http://ipinfo.io", function() {}, "jsonp").always(function(resp) {
                     var countryCode = (resp && resp.country) ? resp.country : "";
                     callback(countryCode);
                 });

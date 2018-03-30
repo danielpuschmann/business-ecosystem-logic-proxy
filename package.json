@@ -1,6 +1,6 @@
 {
-  "name": "business-ecosystem-logic-proxy",
-  "version": "6.4.0",
+  "name": "bae-logic-proxy-test",
+  "version": "5.4.1",
   "description": "Logic Layer for the Business API Ecosystem",
   "author": "UPM",
   "license": "AGPL-3.0",
@@ -35,8 +35,7 @@
     "leveldown": "^1.5.0",
     "levelup": "^1.3.3",
     "merge-dirs": "^0.2.1",
-    "node-minify": "^2.4.1",
-    "i18n-2": "^0.7.2"
+    "node-minify": "^2.4.1"
   },
   "devDependencies": {
     "freeport": "1.0.5",
@@ -46,15 +45,14 @@
     "jasmine": "2.3.2",
     "jasmine-reporters": "2.0.7",
     "nock": "3.1.0",
-    "proxyquire": "1.7.3",
-    "coveralls": "^3.0.0"
+    "proxyquire": "1.7.3"
   },
   "scripts": {
-    "test": "JASMINE_CONFIG_PATH=test/config/jasmine.json node_modules/.bin/istanbul cover --include-all-sources -x public/**/*.js -x server.js -x Gruntfile.js -x fill_indexes.js node_modules/.bin/jasmine"
+    "test": "JASMINE_CONFIG_PATH=test/config/jasmine.json node_modules/.bin/istanbul cover --include-all-sources -x public/**/*.js -x server.js -x Gruntfile.js -x fill_indexes.js --report cobertura node_modules/.bin/jasmine"
   },
   "repository": {
     "type": "git",
-    "url": "https://github.com/FIWARE-TMForum/business-ecosystem-logic-proxy"
+    "url": "https://github.com/FIWARE-TMForum/bae-logic-proxy-test"
   },
   "contributors": [
     {
