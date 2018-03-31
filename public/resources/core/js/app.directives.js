@@ -36,6 +36,8 @@
         .directive('shippingAddressForm', shippingAddressFormDirective)
         .directive('pricePlanForm', pricePlanFormDirective)
         .directive('pricePlanTable', pricePlanTableDirective)
+        .directive('licenseForm', licenseFormDirective)
+        .directive('licenseTable', licenseTableDirective)
         .directive('pager', ['$window', '$timeout', 'EVENTS', pagerDirective])
         .directive('relationshipCreateForm', relationshipCreateFormDirective)
         .directive('relationshipDeleteForm', relationshipDeleteFormDirective)
@@ -132,6 +134,18 @@
                 vm: '=controller'
             },
             templateUrl: 'directives/forms/priceplan'
+        };
+    }
+
+    function licenseFormDirective() {
+        return {
+            restrict: 'E',
+            scope: {
+                form: '=',
+                license: '=data',
+                vm: '=controller'
+            },
+            templateUrl: 'directives/forms/license'
         };
     }
 
@@ -236,6 +250,17 @@
                 vm: '=controller'
             },
             templateUrl: 'directives/tables/priceplan'
+        };
+    }
+
+    function licenseTableDirective() {
+        return {
+            restrict: 'E',
+            scope: {
+                licenses: '=data',
+                vm: '=controller'
+            },
+            templateUrl: 'directives/tables/license'
         };
     }
 

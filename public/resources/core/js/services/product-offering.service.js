@@ -45,6 +45,11 @@
         resource.prototype.appendPricePlan = appendPricePlan;
         resource.prototype.updatePricePlan = updatePricePlan;
         resource.prototype.removePricePlan = removePricePlan;
+
+        resource.prototype.appendLicense = appendLicense;
+        resource.prototype.updateLicense = updateLicense;
+        resource.prototype.removeLicense = removeLicense;
+
         resource.prototype.relationshipOf = relationshipOf;
         resource.prototype.relationships = relationships;
 
@@ -52,7 +57,9 @@
 
         var EVENTS = {
             PRICEPLAN_UPDATE: '$pricePlanUpdate',
-            PRICEPLAN_UPDATED: '$pricePlanUpdated'
+            PRICEPLAN_UPDATED: '$pricePlanUpdated',
+            LICENSE_UPDATE: '$licenseUpdate',
+            LICENSE_UPDATED: '$licenseUpdated'
         };
 
         var TYPES = {
@@ -70,6 +77,11 @@
                 ONE_TIME: 'one time',
                 RECURRING: 'recurring',
                 USAGE: 'usage'
+            },
+            LICENSE: {
+                STANDARD: 'standard open data license',
+                WIZARD: 'custom license wizard',
+                FREETEXT: 'custom license free text'
             }
         };
 
@@ -109,6 +121,21 @@
                 name: '',
                 price: {},
                 priceType: TYPES.PRICE.ONE_TIME,
+                recurringChargePeriod: '',
+                unitOfMeasure: ''
+            },
+            TERMS: {
+                currencyCode: 'EUR',
+                dutyFreeAmount: 0,
+                percentage: 0,
+                taxIncludedAmount: 0,
+                taxRate: 20
+            },
+            LICENSE: {
+                description: '',
+                name: '',
+                terms: {},
+                licenseType: TYPES.LICENSE.STANDARD,
                 recurringChargePeriod: '',
                 unitOfMeasure: ''
             },
@@ -188,12 +215,75 @@
             return result;
         };
 
+        var Terms = function Terms(data) {
+            angular.extend(this, TEMPLATES.TERMS, data);
+            parseNumber(this, ['dutyFreeAmount', 'percentage', 'taxIncludedAmount', 'taxRate']);
+        };
+        Terms.prototype.setCurrencyCode = function setCurrencyCode(codeName) {
+
+            if (codeName in TYPES.CURRENCY_CODE) {
+                this.currencyCode = codeName;
+            }
+
+            return this;
+        };
+        Terms.prototype.toJSON = function toJSON() {
+            return {
+                currencyCode: this.currencyCode,
+                dutyFreeAmount: this.taxIncludedAmount / ((100 + this.taxRate) / 100),
+                percentage: this.percentage,
+                taxIncludedAmount: this.taxIncludedAmount,
+                taxRate: this.taxRate
+            };
+        };
+        Terms.prototype.toString = function toString() {
+            return this.taxIncludedAmount + ' ' + angular.uppercase(this.currencyCode);
+        };
+
+        var License = function License(data) {
+            angular.extend(this, TEMPLATES.LICENSE, data);
+            this.terms = new Terms(this.terms);
+        };
+        License.prototype.setType = function setType(typeName) {
+
+            if (typeName in TYPES.LICENSE && !angular.equals(this.licenseType, typeName)) {
+                this.licenseType = TYPES.LICENSE[typeName];
+                this.unitOfMeasure = '';
+                this.recurringChargePeriod = '';
+
+                switch (angular.lowercase(this.licenseType)) {
+                case TYPES.LICENSE.WIZARD:
+                    this.recurringChargePeriod = TYPES.CHARGE_PERIOD.WEEKLY;
+                    break;
+                }
+            }
+
+            return this;
+        };
+        License.prototype.toString = function toString() {
+            var result = '' + this.terms.toString();
+
+            switch (angular.lowercase(this.licenseType)) {
+            case TYPES.LICENSE.STANDARD:
+                break;
+            case TYPES.LICENSE.WIZARD:
+                result += ' / ' + angular.uppercase(this.recurringChargePeriod);
+                break;
+            case TYPES.LICENSE.FREETEXT:
+                result += ' / ' + angular.uppercase(this.unitOfMeasure);
+                break;
+            }
+
+            return result;
+        };
+
         return {
             EVENTS: EVENTS,
             TEMPLATES: TEMPLATES,
             TYPES: TYPES,
             PATCHABLE_ATTRS: PATCHABLE_ATTRS,
             PricePlan: PricePlan,
+            License: License,
             search: search,
             count: count,
             exists: exists,
@@ -297,6 +387,7 @@
                         id: offeringList.map(function (offering) {
                             var offId = '';
                             extendPricePlans(offering);
+                            extendLicenses(offering);
 
                             if (!offering.isBundle) {
                                 offId = offering.productSpecification.id;
@@ -457,6 +548,7 @@
                 var productParams = {
                     id: offeringList.map(function (data, index) {
                         extendPricePlans(data);
+                        extendLicenses(data);
                         bundleIndexes[data.productSpecification.id] = index;
                         return data.productSpecification.id
                     }).join()
@@ -488,6 +580,7 @@
                     var productOffering = collection[0];
 
                     extendPricePlans(productOffering);
+                    extendLicenses(productOffering);
                     if (productOffering.productSpecification) {
                         ProductSpec.detail(productOffering.productSpecification.id).then(function (productRetrieved) {
                             productOffering.productSpecification = productRetrieved;
@@ -518,6 +611,7 @@
                         if (collection.length) {
                             collection.forEach(function (productOfferingRelated) {
                                 extendPricePlans(productOfferingRelated);
+                                extendLicenses(productOfferingRelated);
                                 productOffering.productSpecification.productSpecificationRelationship.forEach(function (relationship) {
                                     if (productOfferingRelated.productSpecification.id === relationship.productSpec.id) {
                                         productOfferingRelated.productSpecification = relationship.productSpec;
@@ -580,6 +674,16 @@
             } else {
                 productOffering.productOfferingPrice = productOffering.productOfferingPrice.map(function (pricePlan) {
                     return new PricePlan(pricePlan);
+                });
+            }
+        }
+
+        function extendLicenses(productOffering) {
+            if (!angular.isArray(productOffering.productOfferingLicense)) {
+                productOffering.productOfferingLicense = [];
+            } else {
+                productOffering.productOfferingLicense = productOffering.productOfferingLicense.map(function (license) {
+                    return new License(license);
                 });
             }
         }
@@ -720,6 +824,62 @@
 
             update(this, dataUpdated).then(function () {
                 this.productOfferingPrice.splice(index, 1);
+                deferred.resolve(this);
+            }.bind(this), function (response) {
+                deferred.reject(response);
+            });
+
+            return deferred.promise;
+        }
+
+
+        function appendLicense(license) {
+            /* jshint validthis: true */
+            var deferred = $q.defer();
+            var dataUpdated = {
+                productOfferingLicense: this.productOfferingLicense.concat(license)
+            };
+
+            update(this, dataUpdated).then(function () {
+                this.productOfferingLicense.push(license);
+                deferred.resolve(this);
+            }.bind(this), function (response) {
+                deferred.reject(response);
+            });
+
+            return deferred.promise;
+        }
+
+        function updateLicense(index, license) {
+            /* jshint validthis: true */
+            var deferred = $q.defer();
+            var dataUpdated = {
+                productOfferingLicense: this.productOfferingLicense.slice(0)
+            };
+
+            dataUpdated.productOfferingLicense[index] = license;
+
+            update(this, dataUpdated).then(function () {
+                angular.merge(this.productOfferingLicense[index], license);
+                deferred.resolve(this);
+            }.bind(this), function (response) {
+                deferred.reject(response);
+            });
+
+            return deferred.promise;
+        }
+
+        function removeLicense(index) {
+            /* jshint validthis: true */
+            var deferred = $q.defer();
+            var dataUpdated = {
+                productOfferingLicense: this.productOfferingLicense.slice(0)
+            };
+
+            dataUpdated.productOfferingLicense.splice(index, 1);
+
+            update(this, dataUpdated).then(function () {
+                this.productOfferingLicense.splice(index, 1);
                 deferred.resolve(this);
             }.bind(this), function (response) {
                 deferred.reject(response);

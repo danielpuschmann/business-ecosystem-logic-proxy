@@ -2080,8 +2080,19 @@ a.thumbnail:focus {
     width: 100%;
 }
 
+.panel[offering-license] {
+    position: relative;
+    width: 100%;
+}
+
 @media (min-width: 300px) {
     .panel[offering-priceplan] {
+        width: 300px;
+    }
+}
+
+@media (min-width: 300px) {
+    .panel[offering-license] {
         width: 300px;
     }
 }
@@ -2094,11 +2105,29 @@ a.thumbnail:focus {
     }
 }
 
+@media (min-width: 768px) {
+    .panel[offering-license] {
+        margin-right: 5px;
+        margin-left: 5px;
+    }
+}
+
 .panel.selectable[offering-priceplan] {
     cursor: pointer;
 }
 
+.panel.selectable[offering-license] {
+    cursor: pointer;
+}
+
+
 .panel[offering-priceplan] .priceplan-selected {
+    position: absolute;
+    right: 2px;
+    top: 2px;
+}
+
+.panel[offering-license] .license-selected {
     position: absolute;
     right: 2px;
     top: 2px;

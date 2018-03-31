@@ -1,0 +1,22 @@
+.row
+  .col-xs-12
+    .alert.alert-info(ng-if="!updateVM.item.productOfferingPrice.length")
+      span #{ __("No license found.") }
+    license-table(controller="updateVM" data="updateVM.item.productOfferingPrice")
+  .col-xs-12
+    .form-group.text-left(ng-if="!updateVM.licenseEnabled")
+      a.btn.btn-default.z-depth-1(ng-click="updateVM.license = true")
+        span.item-text #{ __("New license") }
+    .panel.panel-default.z-depth-1(ng-if="updateVM.license")
+      .panel-body
+        .h4.text-dark-primary
+          strong #{ __("New license") }
+        hr
+        license-form(form="updateVM.licenseCreateForm" controller="updateVM" data="updateVM.license")
+        .form-group.text-right
+          a.btn.btn-warning(
+            ng-click="updateVM.createLicense()"
+            ng-disabled="!updateVM.licenseCreateForm.$valid || updateVM.createLicense.status === updateVM.STATUS.PENDING"
+          )
+            span.item-icon.fa.fa-spin.fa-spinner(ng-if="updateVM.createLicense.status === updateVM.STATUS.PENDING")
+            span.item-text #{ __("Create") }

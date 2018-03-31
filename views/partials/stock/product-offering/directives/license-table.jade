@@ -1,0 +1,20 @@
+.table-responsive(ng-if="licenses.length")
+  table.table.table-bordered
+    thead
+      tr
+        th #{ __("Name") }
+        th #{ __("Description") }
+        th #{ __("Price") }
+        th #{ __("Actions") }
+    tbody
+      tr(ng-repeat="license in licenses")
+        th {{ license.name }}
+        td {{ license.description }}
+        td {{ license.toString() }}
+        td
+          a.btn.btn-sm.btn-icon.btn-info(ng-click="vm.updateLicense($index)")
+            span.item-icon.fa.fa-spin.fa-spinner(ng-if="vm.updateLicense.status === vm.STATUS.PENDING")
+            span.item-icon.fa.fa-pencil(ng-if="vm.updateLicense.status !== vm.STATUS.PENDING")
+          a.btn.btn-sm.btn-icon.btn-danger(ng-click="vm.removeLicense($index)")
+            span.item-icon.fa.fa-spin.fa-spinner(ng-if="vm.removeLicense.status === vm.STATUS.PENDING")
+            span.item-icon.fa.fa-trash(ng-if="vm.removeLicense.status !== vm.STATUS.PENDING")

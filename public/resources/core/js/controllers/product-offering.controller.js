@@ -169,7 +169,7 @@
             },
             {
                 title: 'License',
-                templateUrl: 'stock/product-offering/create/terms'
+                templateUrl: 'stock/product-offering/create/license'
             },
             {
                 title: 'Catalogue',
@@ -201,12 +201,13 @@
         vm.timeframes = Offering.timeframes;
         vm.purposes = Offering.purposes;
         vm.transferabilities = Offering.transferabilities;
-        vm.standards = Offering.standards
+        vm.standards = Offering.standards;
         vm.terms = {type:'Standard', isFullCustom:false};
         vm.mode = 1;
         vm.CHARGE_PERIODS = Offering.TYPES.CHARGE_PERIOD;
         vm.CURRENCY_CODES = Offering.TYPES.CURRENCY_CODE;
         vm.PRICES = Offering.TYPES.PRICE;
+        vm.LICENSES = Offering.TYPES.LICENSE;
         vm.STATUS = PROMISE_STATUS;
 
         vm.STATUS = PROMISE_STATUS;
@@ -250,6 +251,19 @@
 
         $scope.$on(Offering.EVENTS.PRICEPLAN_UPDATED, function (event, index, pricePlan) {
             angular.merge(vm.data.productOfferingPrice[index], pricePlan);
+        });
+
+        /* LICENSES MEMBERS */
+
+        vm.license = new Offering.License();
+        vm.licenseEnabled = false;
+
+        vm.createLicense = createLicense;
+        vm.updateLicense = updateLicense;
+        vm.removeLicense = removeLicense;
+
+        $scope.$on(Offering.EVENTS.LICENSE_UPDATED, function (event, index, license) {
+            angular.merge(vm.data.productOfferingLicense[index], license);
         });
 
         var searchParams = {
@@ -500,6 +514,22 @@
             vm.data.productOfferingPrice.splice(index, 1);
         }
 
+        /* LICENSES METHODS */
+
+        function createLicense() {
+            vm.data.productOfferingLicense.push(vm.license);
+            vm.license = new Offering.License();
+            vm.licenseEnabled = false;
+        }
+
+        function updateLicense(index) {
+            $rootScope.$broadcast(Offering.EVENTS.LICENSE_UPDATE, index, vm.data.productOfferingLicense[index]);
+        }
+
+        function removeLicense(index) {
+            vm.data.productOfferingLicense.splice(index, 1);
+        }
+
         function setProduct(product) {
             vm.product = product;
         }
@@ -674,6 +704,27 @@
             });
         });
 
+
+        vm.license = new Offering.License();
+        vm.licenseEnabled = false;
+
+        vm.createLicense = createLicense;
+        vm.updateLicense = updateLicense;
+        vm.removeLicense = removeLicense;
+
+        var updateLicensePromise = null;
+
+        $scope.$on(Offering.EVENTS.LICENSE_UPDATED, function (event, index, license) {
+            updateLicensePromise = vm.item.updateLicense(index, license);
+            updateLicensePromise.then(function (productOffering) {
+                $rootScope.$broadcast(EVENTS.MESSAGE_ADDED, 'success', {message: 'The offering license was updated.'});
+            }, function (response) {
+                $rootScope.$broadcast(EVENTS.MESSAGE_ADDED, 'error', {
+                    error: Utils.parseError(response, 'Unexpected error trying to update the offering license.')
+                });
+            });
+        });
+
         var detailPromise = Offering.detail($state.params.offeringId);
         detailPromise.then(function (productOffering) {
             vm.item = productOffering;
@@ -729,6 +780,51 @@
 
         Object.defineProperty(removePricePlan, 'status', {
             get: function () { return removePricePlanPromise != null ? removePricePlanPromise.$$state.status : -1; }
+        });
+
+
+        var createLicensePromise = null;
+
+        function createLicense() {
+            createLicensePromise = vm.item.appendLicense(vm.license);
+            createLicensePromise.then(function (productOffering) {
+                vm.license = new Offering.License();
+                vm.licenseEnabled = false;
+                $rootScope.$broadcast(EVENTS.MESSAGE_ADDED, 'success', {message: 'The offering license was created.'});
+            }, function (response) {
+                $rootScope.$broadcast(EVENTS.MESSAGE_ADDED, 'error', {
+                    error: Utils.parseError(response, 'Unexpected error trying to create the offering license.')
+                });
+            });
+        }
+
+        Object.defineProperty(createLicense, 'status', {
+            get: function () { return createLicensePromise != null ? createLicensePromise.$$state.status : -1; }
+        });
+
+        function updateLicense(index) {
+            $rootScope.$broadcast(Offering.EVENTS.LICENSE_UPDATE, index, vm.item.productOfferingLicense[index]);
+        }
+
+        Object.defineProperty(updateLicense, 'status', {
+            get: function () { return updateLicensePromise != null ? updateLicensePromise.$$state.status : -1; }
+        });
+
+        var removeLicensePromise = null;
+
+        function removeLicense(index) {
+            removeLicensePromise = vm.item.removeLicense(index);
+            removeLicensePromise.then(function (productOffering) {
+                $rootScope.$broadcast(EVENTS.MESSAGE_ADDED, 'success', {message: 'The offering license was removed.'});
+            }, function (response) {
+                $rootScope.$broadcast(EVENTS.MESSAGE_ADDED, 'error', {
+                    error: Utils.parseError(response, 'Unexpected error trying to remove the offering license.')
+                });
+            });
+        }
+
+        Object.defineProperty(removeLicense, 'status', {
+            get: function () { return removeLicensePromise != null ? removeLicensePromise.$$state.status : -1; }
         });
 
         function updateStatus(status) {

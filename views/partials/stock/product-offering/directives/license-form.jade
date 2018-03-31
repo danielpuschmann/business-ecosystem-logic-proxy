@@ -1,0 +1,81 @@
+form(name="form" novalidate)
+  .row
+    .col-md-8
+      .form-group(ng-class="{ 'has-error': vm.hasFieldError(form.name) }")
+        label #{ __("Enter a name") }
+        input.form-control(
+          type="text"
+          name="name"
+          ng-model="license.name"
+          required
+          ng-maxlength="30"
+        )
+        .help-block(ng-messages="form.name.$error" ng-show="vm.hasFieldError(form.name)")
+          span(ng-message="required") #{ __("This field is required.") }
+          span(ng-message="maxlength") #{ __("This field must not exceed %s chars.", "30") }
+          span(ng-message="conflictName") #{ __("This name is being used in other price plan") }
+    .col-md-4
+      .form-group
+        label #{ __("Choose a type") }
+        .dropdown
+          a.btn.btn-block.btn-default.dropdown-toggle.z-depth-0(data-toggle="dropdown")
+            span.item-text {{ license.type | uppercase }}
+            span.item-icon.fa.fa-caret-down
+          .dropdown-menu.dropdown-menu-right.z-depth-2
+            a.dropdown-menu-item(ng-repeat="(key, value) in vm.LICENSES" ng-click="license.setType(key)")
+              span.item-text {{ value | uppercase }}
+  .row
+    .col-md-8
+      .form-group(ng-class="{ 'has-error': vm.hasFieldError(form.taxIncludedAmount) }")
+        label #{ __("Enter a price") }
+        .input-group
+          input.form-control(
+            type="number"
+            name="taxIncludedAmount"
+            ng-model="license.price.taxIncludedAmount"
+            required
+            min="0.01"
+          )
+          .input-group-btn
+            a.btn.btn-default.dropdown-toggle.z-depth-0(data-toggle="dropdown")
+              span.item-text {{ license.price.currencyCode | uppercase }}
+              span.item-icon.fa.fa-caret-down
+            .dropdown-menu.dropdown-menu-right.z-depth-2
+              a.dropdown-menu-item(ng-repeat="(key, value) in vm.CURRENCY_CODES" ng-click="license.price.setCurrencyCode(key)")
+                span.item-text ({{ key }}) {{ value | uppercase }}
+        .help-block(ng-messages="form.taxIncludedAmount.$error" ng-show="vm.hasFieldError(form.taxIncludedAmount)")
+          span(ng-message="required") #{ __("This field is required.") }
+          span(ng-message="min") #{ __("This field must be a greater than 0.") }
+          span(ng-message="number") #{ __("This field must be a valid number.") }
+    .col-md-4(ng-if="license.licenseType === vm.LICENSES.STANDARD")
+      .form-group(ng-class="{ 'has-error': vm.hasFieldError(form.unitOfMeasure) }")
+        label #{ __("Enter a unit") }
+        .input-group
+          span.input-group-addon /
+          input.form-control(
+            type="text"
+            name="unitOfMeasure"
+            ng-model="license.unitOfMeasure"
+            required
+            ng-maxlength="20"
+          )
+        .help-block(ng-messages="form.unitOfMeasure.$error" ng-show="vm.hasFieldError(form.unitOfMeasure)")
+         span(ng-message="required") #{ __("This field is required.") }
+         span(ng-message="maxlength") #{ __("This field must not exceed %s chars.", "20") }
+    .col-md-4(ng-if="license.licenseType === vm.LICENSES.WIZARD")
+      .form-group
+        label #{ __("Choose a charge period") }
+        .input-group
+          span.input-group-addon /
+          select.form-control(
+            name="recurringChargePeriod"
+            ng-model="license.recurringChargePeriod"
+          )
+            option(ng-repeat="(key, value) in vm.CHARGE_PERIODS" value="{{ value | lowercase }}") {{ value | uppercase }}
+  .row
+    .col-md-12
+      .form-group
+        label
+          span #{ __("Enter a description") }
+          small.text-muted (#{ __("optional") })
+        textarea.form-control(name="description" rows="2" ng-model="license.description")

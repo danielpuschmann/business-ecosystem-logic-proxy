@@ -28,7 +28,8 @@
 
     angular
         .module('app')
-        .directive('offeringPriceplan', OfferingPriceplanDirective);
+        .directive('offeringPriceplan', OfferingPriceplanDirective)
+        .directive('offeringLicense', OfferingLicenseDirective);
 
     function OfferingPriceplanDirective() {
         var types = {
@@ -55,6 +56,34 @@
 
         function templateUrl(element, attrs) {
             return 'directives/offering-priceplan';
+        }
+    }
+
+    function OfferingLicenseDirective() {
+        var types = {
+            'standard open data license': 'success',
+            'custom license wizard': 'info',
+            'custom license free text': 'warning'
+        };
+
+        return {
+            restrict: 'A',
+            link: link,
+            templateUrl: templateUrl
+        };
+
+        function link(scope, element, attrs) {
+            var selectable = attrs.selectable && attrs.selectable === 'True' ? true : false;
+
+            element.addClass('panel z-depth-1 panel-' + types[scope.license.licenseType]);
+
+            if (selectable) {
+                element.addClass('selectable');
+            }
+        }
+
+        function templateUrl(element, attrs) {
+            return 'directives/offering-license';
         }
     }
 

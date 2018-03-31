@@ -4,14 +4,14 @@ form(name="step.form", novalidate)
         .btn(ng-model='displayType', btn-radio="'custom'")
         .btn(ng-model='displayType', btn-radio="'fullcustom'")
 
-        //.form-group
-          //.row
-            //label Standard
-              //  input(type='radio', ng-model="createVM.mode", value=1)
-            //label Custom
-              //  input(type='radio', ng-model="createVM.mode", value=2)
-            //label Fully Custom
-              //  input(type='radio', ng-model="createVM.mode", value=3)
+        .form-group
+          .row
+            label Standard
+                input(type='radio', ng-model="createVM.mode", value=1)
+            label Custom
+                input(type='radio', ng-model="createVM.mode", value=2)
+            label Fully Custom
+                input(type='radio', ng-model="createVM.mode", value=3)
 
    .switch(ng-switch='displayType')
        .switch(ng-switch-when='standard')
@@ -25,7 +25,7 @@ form(name="step.form", novalidate)
                             select.form-control(name="exc", ng-model="createVM.terms.standard")
                               option(ng-repeat="standard in createVM.standards", value="{{ standard.name }}") {{ standard.name }}
        .switch(ng-switch-when='custom')
-       //div(ng-if="createVM.customterms")
+       div(ng-if="createVM.customterms")
            form(name="step.form", novalidate)
               .row
                   .col-sm-6

@@ -63,6 +63,10 @@
                 },
                 templateUrl: 'stock/product-offering/update/bundled'
             })
+            .state('stock.offering.update.license', {
+                url: '/license',
+                templateUrl: 'stock/product-offering/update/license'
+            })
             .state('stock.offering.update.priceplan', {
                 url: '/priceplan',
                 templateUrl: 'stock/product-offering/update/priceplan'

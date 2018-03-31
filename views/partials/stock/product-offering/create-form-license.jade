@@ -1,0 +1,24 @@
+.row
+  .col-xs-12
+    license-table(controller="createVM" data="createVM.data.productOfferingLicense")
+  .col-xs-12(ng-if="!createVM.data.productOfferingLicense.length")
+    .alert.alert-info.text-center
+      | #{ __("No license included.") }
+  .col-xs-12(ng-if="createVM.licenseEnabled")
+    .h4.text-dark-primary
+      strong #{ __("New license") }
+    hr
+    license-form(form="createVM.licenseCreateForm" controller="createVM" data="createVM.license")
+    .form-group.text-left
+      a.btn.btn-warning.z-depth-1(ng-disabled="!createVM.licenseCreateForm.$valid", ng-click="createVM.createLicense()")
+        span.item-icon.fa.fa-save
+        span.item-text.hidden-xs.hidden-sm #{ __("Create") }
+  .col-xs-12(ng-if="!createVM.licenseEnabled")
+    .form-group.text-left
+      a.btn.btn-default.z-depth-1(ng-click="createVM.licenseEnabled = true")
+        span.item-text #{ __("New license") }
+  .col-xs-12
+    form(name="step.form" novalidate)
+      .form-group.text-right
+        a.btn.btn-default.z-depth-1(ng-click="createForm.nextStep($index + 1, createVM.stepList[$index + 1])")
+          span.item-text #{ __("Next") }

@@ -1,0 +1,14 @@
+.panel-heading
+  .license-selected(ng-if="licenseSelected && license.name === licenseSelected.name")
+    span.fa-stack
+      span.fa.fa-circle.fa-stack-2x.text-dark-primary
+      span.fa.fa-check.fa-stack-1x.fa-inverse
+  .h4.text-center {{ license.name }}
+.panel-body
+  .h3.text-center
+    strong
+      span {{ priceplan.price.taxIncludedAmount }} 
+      span.small {{ priceplan.price.currencyCode | uppercase }}
+    p.small(ng-if="priceplan.recurringChargePeriod") / {{ priceplan.recurringChargePeriod }}
+    p.small(ng-if="priceplan.unitOfMeasure") / {{ priceplan.unitOfMeasure }}
+  .form-group.text-center.text-muted {{ license.description ? license.description : '#{ __("No description provided.") }' }}

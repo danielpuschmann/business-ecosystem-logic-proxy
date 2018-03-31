@@ -22,6 +22,10 @@
                 span.item-icon.fa.fa-cube
                 span.item-text.hidden-xs #{ __("Bundled") }
             li(ui-sref-active-eq="active")
+              a(ui-sref="stock.offering.update.License")
+                span.item-icon.fa.fa-credit-card
+                span.item-text.hidden-xs #{ __("Licenses") }
+            li(ui-sref-active-eq="active")
               a(ui-sref="stock.offering.update.priceplan")
                 span.item-icon.fa.fa-credit-card
                 span.item-text.hidden-xs #{ __("Price plans") }
